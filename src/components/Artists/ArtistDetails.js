@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Loader from '../Loader';
+
 import api from '../../api';
 
 
@@ -25,7 +27,7 @@ class ArtistDetails extends Component {
     }
 
     render() {
-        if(!this.state.details) return <div>Loading...</div>
+        if(!this.state.details) return <Loader />
 
         const {id, name, picture_big, nb_album, nb_fan } = this.state.details;
 

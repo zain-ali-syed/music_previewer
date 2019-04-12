@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Loader from '../Loader';
 import api from '../../api';
 import AudioPlayer from '../AudioPlayer';
 
@@ -21,7 +22,7 @@ class TrackDetails extends Component {
     }
 
     render() {
-        if(!this.state.details) return <div>Loading...</div>
+        if(!this.state.details) return <Loader />
 
         const {title, album, artist, bpm, duration, link, preview, explicit_lyrics, release_date, track_position} = this.state.details;
         return (

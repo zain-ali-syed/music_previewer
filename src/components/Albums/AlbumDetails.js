@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import AudioPlayer from '../AudioPlayer';
+import Loader from '../Loader';
 import api from '../../api';
 
 
@@ -21,7 +22,7 @@ class AlbumDetails extends Component {
     }
 
     render() {
-        if(!this.state.details) return <div>Loading...</div>
+        if(!this.state.details) return <Loader />
 
         const {artist, title, type, cover_big, genres, genre_id, label,
             release_date, fans, record_type, explicit_lyrics, contributors, duration, nb_tracks, tracks} = this.state.details;
@@ -69,7 +70,7 @@ class AlbumDetails extends Component {
                                     <td style={{width:'40%'}}>
                                        <AudioPlayer preview={preview} />
                                     </td>
-                                    <td><Link to={`/track/${id}`}>Details</Link></td>
+                                    <td style={{width:'10%'}}><Link to={`/track/${id}`}>Details</Link></td>
                                 </tr>
                                 ) })}
                             </tbody>

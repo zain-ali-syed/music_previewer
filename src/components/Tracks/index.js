@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import TrackItem from './TrackItem';
+import Loader from '../Loader';
+
 import api from '../../api';
 
 
@@ -85,7 +87,7 @@ class Tracks extends Component {
 
     render() {
         const {tracks} = this.state;
-        if(!tracks.length) return <div>Loading... </div>
+        if(!tracks.length) return <Loader />
 
         return (
             <>

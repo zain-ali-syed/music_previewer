@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import LoadingOverlay from 'react-loading-overlay';
-import axios from 'axios';
 import TrackItem from './TrackItem';
+import api from '../../api';
 
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 //Bug with deezer API - for any search term for e.g 'Pink Floyd' the TOTAL number of tracks found for pink floyd
 // changes when the index (paging) parameter changes.
@@ -26,16 +23,14 @@ class Tracks extends Component {
         this.fetchTracks();
     }
 
-    fetchTracks = (searchTerm = "The Eagles") => {
-      axios.get(`${SERVER_URL}/search?q=${searchTerm}&index=${this.state.pageIndex}`, { headers})
-           .then(res => this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex})))
-           .catch(err => console.log("err ", err))
+    fetchTracks = async (searchTerm = "The Eagles", pageIndex = this.state.pageIndex) => {
+        const res = await api.fetchTracks(searchTerm, pageIndex);
+        this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex}))
     }
 
     nextPage = () => {
         const {nextPage} = this.state;
         if(!nextPage) return;
-    
         this.setState((prevState) => ({pageIndex: prevState.pageIndex + 25}), this.fetchTracks)
     }
 
@@ -50,7 +45,7 @@ class Tracks extends Component {
     }
 
     renderPagination = () => {
-        const {prevPage, nextPage, currentPage, total} = this.state;
+        const {currentPage, total} = this.state;
         const noOfPages = Math.ceil(total/25);
         const pageIndices = [];
 
@@ -89,9 +84,8 @@ class Tracks extends Component {
     }
 
     render() {
-        const {prevPage, nextPage, total, tracks} = this.state;
-       if(!tracks.length) return <div>Loading... </div>
-       console.log("total ", this.state)
+        const {tracks} = this.state;
+        if(!tracks.length) return <div>Loading... </div>
 
         return (
             <>

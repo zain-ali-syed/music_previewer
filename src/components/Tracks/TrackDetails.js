@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../api';
+import AudioPlayer from '../AudioPlayer';
 
-import axios from 'axios';
-
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 class TrackDetails extends Component {
 
@@ -17,10 +15,9 @@ class TrackDetails extends Component {
         this.fetchDetails(id);
     }
     
-    fetchDetails = (id) => {
-        axios.get(`${SERVER_URL}/track/${id}`, { headers})
-           .then(res => this.setState(() => ({details: res.data})))
-           .catch(err => console.log("err ", err))
+    fetchDetails = async (id, type = "track") => {
+        const res = await api.fetchDetails(id, type)
+        this.setState(() => ({details: res.data}))
     }
 
     render() {
@@ -49,10 +46,7 @@ class TrackDetails extends Component {
                                 <p><i>Deezer URL: {link}</i></p>
                             </div>
                             <div class="card-action">
-                                <audio controls>
-                                    <source src={preview} type="audio/mpeg" />
-                                    Your browser does not support the audio element.
-                                </audio>
+                                <AudioPlayer preview={preview}/>
                             </div>
                         </div>
                 </div>

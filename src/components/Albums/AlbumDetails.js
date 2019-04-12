@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import AudioPlayer from '../AudioPlayer';
+import api from '../../api';
 
-import axios from 'axios';
-
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 class AlbumDetails extends Component {
 
@@ -16,11 +14,10 @@ class AlbumDetails extends Component {
         const { id } = this.props.match.params
         this.fetchDetails(id);
     }
-    
-    fetchDetails = (id) => {
-        axios.get(`${SERVER_URL}/album/${id}`, { headers})
-           .then(res => this.setState(() => ({details: res.data})))
-           .catch(err => console.log("err ", err))
+
+    fetchDetails = async (id, type = "album") => {
+        const res = await api.fetchDetails(id, type)
+        this.setState(() => ({details: res.data}))
     }
 
     render() {
@@ -69,11 +66,8 @@ class AlbumDetails extends Component {
                                 {tracks.data.map(({id, title, preview}) => { return(
                                 <tr>
                                     <td>{title}</td>
-                                    <td style={{width:'30%'}}>
-                                        <audio controls>
-                                            <source src={preview} type="audio/mpeg" />
-                                        Your browser does not support the audio element.
-                                        </audio>
+                                    <td style={{width:'40%'}}>
+                                       <AudioPlayer preview={preview} />
                                     </td>
                                     <td><Link to={`/track/${id}`}>Details</Link></td>
                                 </tr>

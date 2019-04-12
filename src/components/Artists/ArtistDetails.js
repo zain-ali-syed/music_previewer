@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 class ArtistDetails extends Component {
 
@@ -19,8 +17,8 @@ class ArtistDetails extends Component {
     
     fetchDetails = async (id) => {
        //two api calls - one to get artist and one to get albums
-       const artistPromise =  axios.get(`${SERVER_URL}/artist/${id}`, { headers});
-       const albumsPromise =  axios.get(`${SERVER_URL}/artist/${id}/albums`, { headers});
+       const artistPromise =  api.fetchDetails(id, "artist");
+       const albumsPromise =  api.fetchAlbums(id);
 
        const [artist, albums] = await Promise.all([artistPromise, albumsPromise]);
        this.setState(() => ({details:artist.data, albums:albums.data.data}))

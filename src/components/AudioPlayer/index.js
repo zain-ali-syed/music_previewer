@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class AudioPlayer extends Component {
-    
-    render() {
-        return (
-            <div>
-                
-            </div>
-        );
-    }
-}
+const AudioPlayer = ({preview}) => {
+    return (
+        <audio controls>
+            <source src={preview} type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
+    );
+};
 
 export default AudioPlayer;

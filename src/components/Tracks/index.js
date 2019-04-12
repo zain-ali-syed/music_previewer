@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import TrackItem from './TrackItem';
 import Loader from '../Loader';
-
 import api from '../../api';
 
 
@@ -18,16 +17,18 @@ class Tracks extends Component {
         prevPage:"",
         currentPage:0,
         pageIndex: 0,
-        total:""
+        total:"",
+        loading: true
     }
 
     componentDidMount(){
         this.fetchTracks();
     }
 
-    fetchTracks = async (searchTerm = "The Eagles", pageIndex = this.state.pageIndex) => {
+    fetchTracks = async (searchTerm = "Hans Zimmer", pageIndex = this.state.pageIndex) => {
+        this.setState({loading: true})
         const res = await api.fetchTracks(searchTerm, pageIndex);
-        this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex}))
+        this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex, loading:false}))
     }
 
     nextPage = () => {
@@ -86,8 +87,8 @@ class Tracks extends Component {
     }
 
     render() {
-        const {tracks} = this.state;
-        if(!tracks.length) return <Loader />
+        const {loading} = this.state;
+        if(loading) return <Loader />
 
         return (
             <>

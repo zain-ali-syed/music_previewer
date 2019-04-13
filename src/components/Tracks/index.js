@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import TrackItem from './TrackItem';
 import Loader from '../Loader';
 import api from '../../api';
 
 
-//Bug with deezer API - for any search term for e.g 'Pink Floyd' the TOTAL number of tracks found for pink floyd
-// changes when the index (paging) parameter changes.
-
-//This will cause issues with pagination as the total number of tracks found for any given artist should be a CONSTANT.
 
 class Tracks extends Component {
 
@@ -25,7 +22,11 @@ class Tracks extends Component {
         this.fetchTracks();
     }
 
-    fetchTracks = async (searchTerm = "Hans Zimmer", pageIndex = this.state.pageIndex) => {
+    componentDidUpdate(nextProps) {
+        if (this.props.searchTerm !== nextProps.searchTerm) this.fetchTracks();
+      }
+
+    fetchTracks = async (searchTerm = this.props.searchTerm, pageIndex = this.state.pageIndex) => {
         this.setState({loading: true})
         const res = await api.fetchTracks(searchTerm, pageIndex);
         this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex, loading:false}))
@@ -101,4 +102,7 @@ class Tracks extends Component {
     }
 }
 
-export default Tracks;
+const mapStateToProps = state => ({ searchTerm: state.searchTerm })
+
+export default connect(mapStateToProps)(Tracks);
+

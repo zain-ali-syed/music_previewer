@@ -1,6 +1,6 @@
 const initState = {
-    searchTerm: "Pink Floyd",
-    playingTrackId: "123456"
+    searchTerm: "Max Richter",
+    playingTrackId: ""
 }
 
 const rootReducer = (state = initState, action) => {

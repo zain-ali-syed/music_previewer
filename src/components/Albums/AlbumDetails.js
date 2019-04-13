@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import AudioPlayer from '../AudioPlayer';
+import moment from 'moment';
+import  momentDurationFormatSetup from "moment-duration-format";
 import Loader from '../Loader';
 import api from '../../api';
 
@@ -43,7 +45,7 @@ class AlbumDetails extends Component {
                             <p><i>Label: {label}</i></p>
                             <p><i>Genres: {genres.data.map(({name}) => name)}</i></p>
                             <p><i>Tracks: {nb_tracks}</i></p>
-                            <p><i>Duration: {duration}</i></p>
+                            <p><i>Duration: {moment.duration(duration, "seconds").format()}</i></p>
                             <p><i>Release Date: {release_date}</i></p>
                             <p><i>Explicit Lyrics: {explicit_lyrics?"yes":"no"}</i></p>
                             <p><i>Fans: {fans}</i></p>

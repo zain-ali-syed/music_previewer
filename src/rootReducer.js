@@ -1,5 +1,5 @@
 const initState = {
-    searchTerm: "Max Richter",
+    searchTerm: "Pink Floyd",
     playingTrackId: ""
 }
 

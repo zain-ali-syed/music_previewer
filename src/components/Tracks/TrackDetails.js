@@ -52,7 +52,7 @@ class TrackDetails extends Component {
                                 <p><i>Release Date: {release_date}</i></p>
                                 <p><i>Explicit Lyrics: {explicit_lyrics?"yes":"no"}</i></p>
                                 <p><i>Track Position: {track_position}</i></p>
-                                <p><i>Deezer URL: {link}</i></p>
+                                <p><i>Deezer URL: <a href={link} target='_blank'>{link}</a></i></p>
                             </div>
                             <div class="card-action">
                                 <AudioPlayer preview={preview}/>

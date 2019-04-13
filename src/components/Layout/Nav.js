@@ -15,23 +15,24 @@ class Nav extends Component {
 
     handleSubmit = (e) => {
        e.preventDefault();
-       this.props.searchFor(this.state.searchTerm)
+       this.props.searchFor(this.state.searchTerm);
+       this.setState({searchTerm: ""});
        this.props.history.push(`/`)
     }
 
     render() {
+        const {searchTerm} = this.state;
         return (
-            <nav>
-                <div className="nav-wrapper white">
-                    <form onSubmit={this.handleSubmit}>
-                        <div className="input-field">
-                        <input id="searchTerm" type="search" required placeHolder="Search for Artist, Album or Track name ..." onChange={this.handleChange}/>
-                        <label className="label-icon" for="search"><i className="material-icons grey-text text-darken-2">search</i></label>
-                        <i className="material-icons grey-text text-darken-2">close</i>
-                        </div>
-                    </form>
-                </div>
-            </nav>
+                <nav>
+                    <div className="nav-wrapper white">
+                        <form onSubmit={this.handleSubmit}>
+                            <div className="input-field">
+                            <input id="searchTerm" type="search" required placeHolder="Search for Artist, Album or Track" onChange={this.handleChange} value={searchTerm}/>
+                            <label className="label-icon" for="search"><i className="material-icons grey-text text-darken-2">search</i></label>
+                            </div>
+                        </form>
+                    </div>
+                </nav>
         );
     }
 }

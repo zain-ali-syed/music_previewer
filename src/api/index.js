@@ -16,5 +16,9 @@ const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'applicati
     return axios.get(`${SERVER_URL}/artist/${id}/albums`,{headers})
  };
 
-export default {fetchTracks, fetchDetails, fetchAlbums}
+ const fetchRelatedArtists = (id) => {
+    return axios.get(`${SERVER_URL}/artist/${id}/related`,{headers})
+ };
+
+export default {fetchTracks, fetchDetails, fetchAlbums, fetchRelatedArtists}
 

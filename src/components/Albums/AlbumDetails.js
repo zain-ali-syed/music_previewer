@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import AudioPlayer from '../AudioPlayer';
+import moment from 'moment';
+import  momentDurationFormatSetup from "moment-duration-format";
+import Loader from '../Loader';
+import api from '../../api';
 
-import axios from 'axios';
-
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 class AlbumDetails extends Component {
 
@@ -16,15 +17,14 @@ class AlbumDetails extends Component {
         const { id } = this.props.match.params
         this.fetchDetails(id);
     }
-    
-    fetchDetails = (id) => {
-        axios.get(`${SERVER_URL}/album/${id}`, { headers})
-           .then(res => this.setState(() => ({details: res.data})))
-           .catch(err => console.log("err ", err))
+
+    fetchDetails = async (id, type = "album") => {
+        const res = await api.fetchDetails(id, type)
+        this.setState(() => ({details: res.data}))
     }
 
     render() {
-        if(!this.state.details) return <div>Loading...</div>
+        if(!this.state.details) return <Loader />
 
         const {artist, title, type, cover_big, genres, genre_id, label,
             release_date, fans, record_type, explicit_lyrics, contributors, duration, nb_tracks, tracks} = this.state.details;
@@ -45,7 +45,7 @@ class AlbumDetails extends Component {
                             <p><i>Label: {label}</i></p>
                             <p><i>Genres: {genres.data.map(({name}) => name)}</i></p>
                             <p><i>Tracks: {nb_tracks}</i></p>
-                            <p><i>Duration: {duration}</i></p>
+                            <p><i>Duration: {moment.duration(duration, "seconds").format()}</i></p>
                             <p><i>Release Date: {release_date}</i></p>
                             <p><i>Explicit Lyrics: {explicit_lyrics?"yes":"no"}</i></p>
                             <p><i>Fans: {fans}</i></p>
@@ -69,13 +69,10 @@ class AlbumDetails extends Component {
                                 {tracks.data.map(({id, title, preview}) => { return(
                                 <tr>
                                     <td>{title}</td>
-                                    <td style={{width:'30%'}}>
-                                        <audio controls>
-                                            <source src={preview} type="audio/mpeg" />
-                                        Your browser does not support the audio element.
-                                        </audio>
+                                    <td style={{width:'40%'}}>
+                                       <AudioPlayer preview={preview} />
                                     </td>
-                                    <td><Link to={`/track/${id}`}>Details</Link></td>
+                                    <td style={{width:'10%'}}><Link to={`/track/${id}`}>Details</Link></td>
                                 </tr>
                                 ) })}
                             </tbody>

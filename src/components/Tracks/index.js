@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
-import LoadingOverlay from 'react-loading-overlay';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import TrackItem from './TrackItem';
+import Loader from '../Loader';
+import api from '../../api';
 
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
-//Bug with deezer API - for any search term for e.g 'Pink Floyd' the TOTAL number of tracks found for pink floyd
-// changes when the index (paging) parameter changes.
-
-//This will cause issues with pagination as the total number of tracks found for any given artist should be a CONSTANT.
 
 class Tracks extends Component {
 
@@ -19,23 +14,27 @@ class Tracks extends Component {
         prevPage:"",
         currentPage:0,
         pageIndex: 0,
-        total:""
+        total:"",
+        loading: true
     }
 
     componentDidMount(){
         this.fetchTracks();
     }
 
-    fetchTracks = (searchTerm = "The Eagles") => {
-      axios.get(`${SERVER_URL}/search?q=${searchTerm}&index=${this.state.pageIndex}`, { headers})
-           .then(res => this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex})))
-           .catch(err => console.log("err ", err))
+    componentDidUpdate(nextProps) {
+        if (this.props.searchTerm !== nextProps.searchTerm) this.fetchTracks();
+      }
+
+    fetchTracks = async (searchTerm = this.props.searchTerm, pageIndex = this.state.pageIndex) => {
+        this.setState({loading: true})
+        const res = await api.fetchTracks(searchTerm, pageIndex);
+        this.setState(({pageIndex}) => ({prevPage: res.data.prev, nextPage:res.data.next, total:res.data.total, tracks: res.data.data, currentPage: pageIndex, loading:false}))
     }
 
     nextPage = () => {
         const {nextPage} = this.state;
         if(!nextPage) return;
-    
         this.setState((prevState) => ({pageIndex: prevState.pageIndex + 25}), this.fetchTracks)
     }
 
@@ -50,7 +49,7 @@ class Tracks extends Component {
     }
 
     renderPagination = () => {
-        const {prevPage, nextPage, currentPage, total} = this.state;
+        const {currentPage, total} = this.state;
         const noOfPages = Math.ceil(total/25);
         const pageIndices = [];
 
@@ -89,9 +88,8 @@ class Tracks extends Component {
     }
 
     render() {
-        const {prevPage, nextPage, total, tracks} = this.state;
-       if(!tracks.length) return <div>Loading... </div>
-       console.log("total ", this.state)
+        const {loading} = this.state;
+        if(loading) return <Loader />
 
         return (
             <>
@@ -104,4 +102,7 @@ class Tracks extends Component {
     }
 }
 
-export default Tracks;
+const mapStateToProps = state => ({ searchTerm: state.searchTerm })
+
+export default connect(mapStateToProps)(Tracks);
+

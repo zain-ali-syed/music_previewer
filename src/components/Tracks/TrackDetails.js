@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import Loader from '../Loader';
+import api from '../../api';
+import AudioPlayer from '../AudioPlayer';
+import moment from 'moment';
+import  momentDurationFormatSetup from "moment-duration-format";
 
-import axios from 'axios';
 
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 class TrackDetails extends Component {
 
@@ -17,14 +19,18 @@ class TrackDetails extends Component {
         this.fetchDetails(id);
     }
     
-    fetchDetails = (id) => {
-        axios.get(`${SERVER_URL}/track/${id}`, { headers})
-           .then(res => this.setState(() => ({details: res.data})))
-           .catch(err => console.log("err ", err))
+    fetchDetails = async (id, type = "track") => {
+        const res = await api.fetchDetails(id, type)
+        this.setState(() => ({details: res.data}))
+    }
+
+    formatTime = (seconds) => {
+        seconds = parseInt(seconds) //because moment js dont know to handle number in string format
+        return Math.floor(moment.duration(seconds,'seconds').asHours()) + ':' + moment.duration(seconds,'seconds').minutes() + ':' + moment.duration(seconds,'seconds').seconds();
     }
 
     render() {
-        if(!this.state.details) return <div>Loading...</div>
+        if(!this.state.details) return <Loader />
 
         const {title, album, artist, bpm, duration, link, preview, explicit_lyrics, release_date, track_position} = this.state.details;
         return (
@@ -41,18 +47,15 @@ class TrackDetails extends Component {
                                 </div>
                                 <h4>{title}</h4>
                                 <p><i>Album: <Link to={`/album/${album.id}`}>{album.title}</Link></i></p>
-                                <p><i>Duration: {duration} secs</i></p>
+                                <p><i>Duration: {moment.duration(duration, "seconds").format()}</i></p>
                                 <p><i>BPM: {bpm}</i></p>
                                 <p><i>Release Date: {release_date}</i></p>
                                 <p><i>Explicit Lyrics: {explicit_lyrics?"yes":"no"}</i></p>
                                 <p><i>Track Position: {track_position}</i></p>
-                                <p><i>Deezer URL: {link}</i></p>
+                                <p><i>Deezer URL: <a href={link} target='_blank'>{link}</a></i></p>
                             </div>
                             <div class="card-action">
-                                <audio controls>
-                                    <source src={preview} type="audio/mpeg" />
-                                    Your browser does not support the audio element.
-                                </audio>
+                                <AudioPlayer preview={preview}/>
                             </div>
                         </div>
                 </div>

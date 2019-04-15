@@ -1,33 +1,53 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import {withRouter} from 'react-router'
+import Loader from '../Loader';
+import api from '../../api';
 
-const SERVER_URL = "https://cors-anywhere.herokuapp.com/https://api.deezer.com";
-const headers = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'};
 
 class ArtistDetails extends Component {
 
     state = {
         details:null,
-        albums: []
+        albums: [],
+        relatedArtists: []
     }
 
-    componentDidMount(){
-        const { id } = this.props.match.params
-        this.fetchDetails(id);
+    componentDidMount() {
+
+        this.props.history.listen((location, action) => {
+            this.setState({details: null}); 
+            const id = Number(location.pathname.split("/")[2])
+            this.fetchDetails(id);
+        });
+
+        this.fetchDetails(this.props.match.params.id);
     }
     
     fetchDetails = async (id) => {
-       //two api calls - one to get artist and one to get albums
-       const artistPromise =  axios.get(`${SERVER_URL}/artist/${id}`, { headers});
-       const albumsPromise =  axios.get(`${SERVER_URL}/artist/${id}/albums`, { headers});
+       
+       //three api calls - one to get artist and one to get albums and one to get similar artists
+       const artistPromise =  api.fetchDetails(id, "artist");
+       const albumsPromise =  api.fetchAlbums(id);
+       const relatedArtistsPromise =  api.fetchRelatedArtists(id);
 
-       const [artist, albums] = await Promise.all([artistPromise, albumsPromise]);
-       this.setState(() => ({details:artist.data, albums:albums.data.data}))
+       const [artist, albums, relatedArtists] = await Promise.all([artistPromise, albumsPromise, relatedArtistsPromise]);
+       this.setState(() => ({details:artist.data, albums:albums.data.data, relatedArtists:relatedArtists.data.data}))
+    }
+
+    displaySimilarArtists = () => {
+        const relatedArtists = this.state.relatedArtists;
+
+        return relatedArtists.map(({id, name, picture_small})                                               => 
+                 <div className="chip grey darken-1">
+                 <img src={picture_small} alt="Contact Person" />
+                 <Link to={`/artist/${id}`}><span className="white-text">{name}</span></Link>
+                 </div>
+        )
     }
 
     render() {
-        if(!this.state.details) return <div>Loading...</div>
+        if(!this.state.details) return <Loader />
 
         const {id, name, picture_big, nb_album, nb_fan } = this.state.details;
 
@@ -44,7 +64,8 @@ class ArtistDetails extends Component {
                             <p><i>Fans: {nb_fan}</i></p>
                         </div>
                         <div class="card-action">
-
+                        <h6>Similar Artists</h6>
+                            {this.displaySimilarArtists()}
                         </div>
                     </div>
                 </div>
@@ -54,7 +75,7 @@ class ArtistDetails extends Component {
                         <table className="striped">
                             <thead>
                                 <tr>
-                                    <th><h5>Albums</h5></th>
+                                    <th><h5>Albums by {name}</h5></th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -83,5 +104,5 @@ class ArtistDetails extends Component {
 
 
 
-export default ArtistDetails;
+export default withRouter(ArtistDetails);
        

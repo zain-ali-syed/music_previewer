@@ -4,7 +4,7 @@ const Footer = () => {
     return (
         <footer>
             <div class="copyright">
-                <p>Copyright 2019 - Music Rediscovered</p>
+                <p>2019 - Reactplayground</p>
             </div>
             <div class="social">
                 <a href="#!" class="support">Contact Us</a>

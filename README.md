@@ -1,4 +1,7 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A music catalogue which allows you to search for artists, albums, tracks and listen to track samples. This app was created with React and behind the scenes powered by the Deezer Music API
+
+A demo for this app can be viewed at http://musicpreviewer-zainsyed.surge.sh/
+
 
 ## Available Scripts
 
